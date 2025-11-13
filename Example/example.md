@@ -225,7 +225,7 @@ The optimization criterion $C$ is defined per segment as a measure of alignment 
 With $G^P$ and $G^T$ the practical and theoretical gradient respectively. Note that this is a  **minimization** problem. The following results are associated with the manually selected corners. 
 
 ```matlab
-C_criteria_per_segment = compute_C_criteria(actual_gradient, theoretical_gradient, Mij)
+C_criterion_per_segment = compute_C_criterion(actual_gradient, theoretical_gradient, Mij)
 ```
 
 ```matlabTextOutput
@@ -242,7 +242,7 @@ C_criteria_per_segment = 1x4
 The following results is associated with the manually selected corners.
 
 ```matlab
-C_criteria = sum(C_criteria_per_segment)/4
+C_criterion = sum(C_criterion_per_segment)/4
 ```
 
 ```matlabTextOutput
@@ -279,13 +279,13 @@ is_still_optimizing = true;
 iteration = 0;
 C_x_axis = 0;
 
-% Optimize C criteria
+% Optimize C criterion
 while is_still_optimizing
     is_still_optimizing = false; % Update to true when finding a better position than current
     
     % Find the worst corner position
-    corner_to_fix = find(C_criteria_per_segment==max(C_criteria_per_segment));
-    if C_criteria_per_segment(mod(corner_to_fix-2,4)+1) < C_criteria_per_segment(mod(corner_to_fix,4)+1)
+    corner_to_fix = find(C_criterion_per_segment==max(C_criterion_per_segment));
+    if C_criterion_per_segment(mod(corner_to_fix-2,4)+1) < C_criterion_per_segment(mod(corner_to_fix,4)+1)
         corner_to_fix = mod(corner_to_fix,4)+1;
     end
 
@@ -297,20 +297,20 @@ while is_still_optimizing
         % Choose a neighbour of corner_to_fix in predefined neighbourhood to explore
         intermediate_corners(:, corner_to_fix) = best_candidates(:, corner_to_fix) + neighbour;
 
-        % Recompute actual gradient for this neighbour and the criteria associated with this change
+        % Recompute actual gradient for this neighbour and the criterion associated with this change
         intermediate_Mij = compute_Mij_positions(U, V, p, L, intermediate_corners);
         intermediate_virtual_image = compute_virtual_image(frame(:, :, 1), intermediate_corners(2,:), intermediate_corners(1,:));
         intermediate_theoretical_gradient = compute_gradient(intermediate_virtual_image,sigma,mesh);
         
-        % Compute C criteria for the new positions
-        intermediate_C_criteria_per_segment = compute_C_criteria(actual_gradient, intermediate_theoretical_gradient, intermediate_Mij);
-        intermediate_C_criteria = sum(intermediate_C_criteria_per_segment)/4;
+        % Compute C criterion for the new positions
+        intermediate_C_criterion_per_segment = compute_C_criterion(actual_gradient, intermediate_theoretical_gradient, intermediate_Mij);
+        intermediate_C_criterion = sum(intermediate_C_criterion_per_segment)/4;
 
-        % If criteria is lower, update the intermediate positions as the best candidates
-        if (intermediate_C_criteria<C_criteria(end))
+        % If criterion is lower, update the intermediate positions as the best candidates
+        if (intermediate_C_criterion<C_criterion(end))
             best_candidates = intermediate_corners;
-            C_criteria_per_segment = intermediate_C_criteria_per_segment;
-            C_criteria = [C_criteria intermediate_C_criteria];
+            C_criterion_per_segment = intermediate_C_criterion_per_segment;
+            C_criterion = [C_criterion intermediate_C_criterion];
             C_x_axis = [C_x_axis iteration];
             is_still_optimizing = true; % Found a better position than current
         end
@@ -324,12 +324,12 @@ end
 The figure below shows the evolution of $C$ during optimization. The algorithm converges rapidly in only a few iterations, demonstrating efficient minimization behavior.
 
 ```matlab
-% Show the optimization of C criteria
+% Show the optimization of C criterion
 figure;
-plot(C_x_axis, C_criteria, 'bo-')
-title("Values of C criteria through optimization process")
+plot(C_x_axis, C_criterion, 'bo-')
+title("Values of C criterion through optimization process")
 xlabel("Number of iteration")
-ylabel("Values of C criteria")
+ylabel("Values of C criterion")
 ```
 
 ![figure_6.png](./example_media/figure_6.png)

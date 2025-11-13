@@ -1,7 +1,7 @@
-function C_criteria = compute_C_criteria(actual_gradient, theoretical_gradient, Mij)
-    C_criteria = [];
+function C_criterion = compute_C_criterion(actual_gradient, theoretical_gradient, Mij)
+    C_criterion = [];
     for border=1:4
-        % Compute C criteria for current segment
+        % Compute C criterion for current segment
         C = 0;
         Mij_points = Mij(:,:,border); % Get Mij position for the current segment
 
@@ -13,7 +13,7 @@ function C_criteria = compute_C_criteria(actual_gradient, theoretical_gradient, 
             vect_actual_gradient = [actual_gradient(x,y,1) ; actual_gradient(x,y,2)];
             vect_theoretical_gradient = [theoretical_gradient(x,y,1) ; theoretical_gradient(x,y,2)];
 
-            % Compute C criteria
+            % Compute C criterion
             score = abs(dot(vect_actual_gradient, vect_theoretical_gradient)/(norm(vect_theoretical_gradient)*norm(vect_actual_gradient)));
             if dot(vect_actual_gradient, vect_theoretical_gradient)==0 % Fix the undefined case "one of the gradient is 0"
                 score = 0;
@@ -21,5 +21,5 @@ function C_criteria = compute_C_criteria(actual_gradient, theoretical_gradient, 
             C = C + 1 - score; % Sum for each Mij point of this segment
             
         end
-        C_criteria = [C_criteria C/size(Mij,2)]; % Keep the mean of C criteria on Mij points for each segment
+        C_criterion = [C_criterion C/size(Mij,2)]; % Keep the mean of C criterion on Mij points for each segment
     end
